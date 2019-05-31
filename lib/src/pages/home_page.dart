@@ -1,37 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:formvalidation/src/blocs/provider.dart';
 import 'package:formvalidation/src/models/product_model.dart';
-import 'package:formvalidation/src/providers/productos_provider.dart';
 
 class HomePage extends StatelessWidget {
 
-  final productosProvider = new ProductosProvider();
 
   @override
   Widget build(BuildContext context) {
 
-    final bloc = Provider.of(context);
+    final productBloc = Provider.productsBloc(context);
+    productBloc.loadProduct();
 
     return Scaffold(
       appBar: AppBar(
         title: Text("Home Page"),
         
       ),
-      body: _list(),
+      body: _list(productBloc),
       floatingActionButton: _createButton(context),
     );
   }
 
-  Widget _list(){
-    return FutureBuilder(
-      future: productosProvider.loadProduct(),
-      builder: (BuildContext context, AsyncSnapshot<List<ProductModel>> snapshot) {
+  Widget _list(ProductBloc productBloc){
+
+    return StreamBuilder(
+      stream: productBloc.productStream ,
+      builder: (BuildContext context, AsyncSnapshot<List<ProductModel>> snapshot){
         if(snapshot.hasData) {
 
           final produts = snapshot.data;
           return ListView.builder(
             itemCount: produts.length,
-            itemBuilder: (contex, i) => _item(context,produts[i]),
+            itemBuilder: (contex, i) => _item(context,productBloc,produts[i]),
           );
         }else{
           return Center(child: CircularProgressIndicator(),);
@@ -40,15 +40,13 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _item(BuildContext context, ProductModel product){
+  Widget _item(BuildContext context,ProductBloc productBloc, ProductModel product){
     return Dismissible(
       key: UniqueKey(),
       background: Container(
         color: Colors.redAccent,
       ),
-      onDismissed: (direccion){
-        productosProvider.deleteProduct(product.id);
-      },
+      onDismissed: (direccion) => productBloc.deleteProduct(product.id),
       child:  Card(
         child: Column(
           children: <Widget>[

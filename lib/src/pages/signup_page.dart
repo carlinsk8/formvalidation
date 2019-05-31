@@ -4,7 +4,7 @@ import 'package:formvalidation/src/blocs/provider.dart';
 import 'package:formvalidation/src/providers/user_provider.dart';
 import 'package:formvalidation/src/utils/utils.dart';
 
-class LoginPage extends StatelessWidget {
+class SignUpPage extends StatelessWidget {
 
   final userProvider = new UserProvider();
 
@@ -52,7 +52,7 @@ class LoginPage extends StatelessWidget {
             ),
             child: Column(
               children: <Widget>[
-                Text("SignIn", style: TextStyle(fontSize: 20.0),),
+                Text("SignUp", style: TextStyle(fontSize: 20.0),),
                 SizedBox(height: 60.0),
                 _email(bloc),
                 SizedBox(height: 30.0),
@@ -64,8 +64,8 @@ class LoginPage extends StatelessWidget {
           ),
 
           FlatButton(
-            child: Text("Create a new account"),
-            onPressed: () => Navigator.pushReplacementNamed(context, 'registro'),
+            child: Text("you already have an account?"),
+            onPressed: () => Navigator.pushReplacementNamed(context, 'login'),
           ),
           SizedBox(height: 100.0,)
         ],
@@ -135,15 +135,15 @@ class LoginPage extends StatelessWidget {
           elevation: 0.0,
           color: Colors.deepPurple,
           textColor: Colors.white,
-          onPressed: snapshot.hasData ? () => _login(bloc, context) :null,
+          onPressed: snapshot.hasData ? () => _signUp(bloc, context) :null,
         );
       },
     );
   }
 
-  _login(LoginBloc bloc, BuildContext context) async{
+  _signUp(LoginBloc bloc, BuildContext context) async{
     
-    Map info = await userProvider.login(bloc.email, bloc.password);
+    Map info = await userProvider.newUser(bloc.email, bloc.password);
 
     if(info['ok']){
 
@@ -153,7 +153,7 @@ class LoginPage extends StatelessWidget {
       showAlert(context, info['mensaje']);
     }
 
-    
+    //Navigator.pushReplacementNamed(context, 'home');
   }
 
   Widget _createBackground(BuildContext context){
@@ -193,7 +193,7 @@ class LoginPage extends StatelessWidget {
             children: <Widget>[
               Icon(Icons.account_box, color: Colors.white, size: 100.0),
               SizedBox(height: 10.0, width: double.infinity,),
-              Text('Login', style: TextStyle(color: Colors.white, fontSize: 25.0))
+              Text('Create a new acount', style: TextStyle(color: Colors.white, fontSize: 25.0))
             ],
           ),
         )

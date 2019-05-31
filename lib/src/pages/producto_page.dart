@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:formvalidation/src/models/product_model.dart';
-import 'package:formvalidation/src/providers/productos_provider.dart';
-import 'package:formvalidation/src/utils/utils.dart' as utils;
+import 'package:formvalidation/src/blocs/provider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:formvalidation/src/models/product_model.dart';
+import 'package:formvalidation/src/utils/utils.dart' as utils;
 
 class ProductoPage extends StatefulWidget {
 
@@ -16,14 +16,16 @@ class _ProductoPageState extends State<ProductoPage> {
 
   final formKey = GlobalKey<FormState>();
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  final productProvider = new ProductosProvider();
 
+  ProductBloc productBloc;
   ProductModel product = new ProductModel();
   bool _loading = false;
   File foto;
 
   @override
   Widget build(BuildContext context) {
+
+    productBloc = Provider.productsBloc(context);
 
     final ProductModel productData = ModalRoute.of(context).settings.arguments;
 
@@ -138,13 +140,13 @@ class _ProductoPageState extends State<ProductoPage> {
     setState(() {_loading = true;});
 
     if(foto != null){
-      product.photoUrl  = await productProvider.uploadImage(foto);
+      product.photoUrl  = await productBloc.uploadImage(foto);
     }
 
     if(product.id == null){
-      productProvider.crateProduct(product);
+      productBloc.addProduct(product);
     }else{
-      productProvider.editroduct(product);
+      productBloc.editProduct(product);
     }
 
     //setState(() {_loading = false;});
